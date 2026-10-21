@@ -1,15 +1,20 @@
 import pytest
 
 from target import (
+    average,
     common_items,
     count_vowels,
     celsius_to_fahrenheit,
+    divide,
+    factorial,
     find_max,
     get_price,
     greet,
     invert,
     is_adult,
     is_leap_year,
+    power,
+    square_root,
     swap,
     to_int,
 )
@@ -165,3 +170,88 @@ def test_to_int(value, expected):
 def test_to_int_rejects_boolean():
     with pytest.raises(TypeError, match="bool is not allowed"):
         to_int(True)
+
+
+@pytest.mark.parametrize(
+    ("dividend", "divisor", "expected"),
+    [(8, 2, 4.0), (-9, 3, -3.0), (1, 4, 0.25)],
+)
+def test_divide(dividend, divisor, expected):
+    result = divide(dividend, divisor)
+
+    assert isinstance(result, float)
+    assert result == expected
+
+
+def test_divide_rejects_zero_divisor():
+    with pytest.raises(ZeroDivisionError, match="cannot divide by zero"):
+        divide(1, 0)
+
+
+@pytest.mark.parametrize(
+    ("base", "exponent", "expected"),
+    [(2, 3, 8), (5, 0, 1), (2, -2, 0.25), (-3, 3, -27)],
+)
+def test_power(base, exponent, expected):
+    assert power(base, exponent) == expected
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [(0, 0.0), (1, 1.0), (144, 12.0)],
+)
+def test_square_root(value, expected):
+    result = square_root(value)
+
+    assert isinstance(result, float)
+    assert result == expected
+
+
+def test_square_root_approximates_irrational_result():
+    assert square_root(2) == pytest.approx(2**0.5)
+
+
+def test_square_root_rejects_negative_value():
+    with pytest.raises(
+        ValueError, match="cannot take the square root of a negative number"
+    ):
+        square_root(-1)
+
+
+@pytest.mark.parametrize(
+    ("number", "expected"),
+    [(0, 1), (1, 1), (5, 120), (7, 5040)],
+)
+def test_factorial(number, expected):
+    result = factorial(number)
+
+    assert isinstance(result, int)
+    assert result == expected
+
+
+def test_factorial_rejects_negative_number():
+    with pytest.raises(
+        ValueError, match="factorial is not defined for negative numbers"
+    ):
+        factorial(-1)
+
+
+@pytest.mark.parametrize(
+    ("numbers", "expected"),
+    [
+        ([1, 2, 3], 2.0),
+        ([-4, -2], -3.0),
+        ([1.5, 2.5], 2.0),
+        ([7], 7.0),
+    ],
+)
+def test_average(numbers, expected):
+    result = average(numbers)
+
+    assert isinstance(result, float)
+    assert result == expected
+
+
+def test_average_rejects_empty_list():
+    with pytest.raises(ValueError, match="list is empty"):
+        average([])
