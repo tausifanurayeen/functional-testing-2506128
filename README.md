@@ -12,3 +12,11 @@ python -m pip install -r requirements.txt
 python -m ruff check .
 python -m pytest --cov=target --cov-branch --cov-report=term-missing --cov-fail-under=100
 ```
+
+## Run the frontend
+
+Start the Flask app and open `http://127.0.0.1:5000` in a browser:
+
+```bash
+python app.py
+```
