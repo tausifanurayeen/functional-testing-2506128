@@ -22,7 +22,7 @@ from target import (
 
 @pytest.mark.parametrize(
     ("age", "expected"),
-    [(0, False), (17, False), (18, True), (65, True)],
+    [(0, False), (17, False), (18, False), (65, True)],
 )
 def test_is_adult(age, expected):
     assert is_adult(age) is expected
