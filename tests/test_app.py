@@ -21,9 +21,21 @@ def test_health_returns_deployed_commit_sha(client, monkeypatch):
     assert response.json == {"sha": commit_sha}
 
 
+def test_health_uses_render_commit_sha(client, monkeypatch):
+    commit_sha = "c" * 40
+    monkeypatch.delenv("APP_COMMIT_SHA", raising=False)
+    monkeypatch.setenv("RENDER_GIT_COMMIT", commit_sha)
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json == {"sha": commit_sha}
+
+
 def test_health_uses_local_git_sha_when_deploy_sha_is_unset(client, monkeypatch):
     commit_sha = "b" * 40
     monkeypatch.delenv("APP_COMMIT_SHA", raising=False)
+    monkeypatch.delenv("RENDER_GIT_COMMIT", raising=False)
     monkeypatch.setattr(
         subprocess,
         "run",
@@ -40,6 +52,7 @@ def test_health_uses_local_git_sha_when_deploy_sha_is_unset(client, monkeypatch)
 
 def test_health_reports_when_commit_sha_is_unavailable(client, monkeypatch):
     monkeypatch.delenv("APP_COMMIT_SHA", raising=False)
+    monkeypatch.delenv("RENDER_GIT_COMMIT", raising=False)
 
     def git_is_unavailable(*args, **kwargs):
         raise FileNotFoundError("git executable not found")

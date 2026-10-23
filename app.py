@@ -53,7 +53,7 @@ def index():
 
 @app.get("/health")
 def health():
-    commit_sha = os.environ.get("APP_COMMIT_SHA")
+    commit_sha = os.environ.get("APP_COMMIT_SHA") or os.environ.get("RENDER_GIT_COMMIT")
     if commit_sha is None:
         try:
             commit_sha = subprocess.run(
