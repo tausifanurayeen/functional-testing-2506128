@@ -67,12 +67,78 @@
         line-height: 1.5;
       }
 
-      .notice {
+      .try-button,
+      .run-button {
+        margin-top: 1rem;
+        padding: 0.65rem 0.9rem;
+        border: 0;
+        border-radius: 7px;
+        color: #fff;
+        background: #24599a;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 600;
+      }
+
+      .try-button:hover,
+      .run-button:hover {
+        background: #183b68;
+      }
+
+      .runner {
         margin: 1.5rem 0 0;
-        padding: 1rem 1.25rem;
-        border-left: 4px solid #e5a83b;
-        border-radius: 4px;
-        background: #fff8e9;
+        padding: 1.5rem;
+        border: 1px solid #dce4ef;
+        border-radius: 12px;
+        background: #fff;
+      }
+
+      .runner label {
+        display: block;
+        margin: 1rem 0 0.4rem;
+        font-weight: 600;
+      }
+
+      .runner select,
+      .runner textarea {
+        width: 100%;
+        padding: 0.7rem;
+        border: 1px solid #bdcadd;
+        border-radius: 7px;
+        color: #17233b;
+        font: 1rem Consolas, monospace;
+      }
+
+      .runner textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+
+      .output {
+        min-height: 3rem;
+        margin: 0.75rem 0 0;
+        padding: 1rem;
+        overflow-wrap: anywhere;
+        border-radius: 7px;
+        background: #f4f7fb;
+        white-space: pre-wrap;
+      }
+
+      .output[data-state="error"] {
+        color: #9d2424;
+        background: #fff0f0;
+      }
+
+      .output[data-state="success"] {
+        color: #155c37;
+        background: #edfaf2;
+      }
+
+      button:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        outline: 3px solid #e5a83b;
+        outline-offset: 2px;
       }
     </style>
   </head>
@@ -80,8 +146,8 @@
     <header>
       <h1>Function Lab</h1>
       <p>
-        Explore the 16 Python functions in this project. Their interactive
-        controls and result handling will be added in the next step.
+        Explore and run the 16 Python functions in this project. Choose a
+        function, provide its arguments as JSON, and view the result or error.
       </p>
     </header>
     <main>
@@ -90,71 +156,194 @@
         <article class="function-card">
           <h3>is_adult</h3>
           <p>Check whether an age is 18 or older.</p>
+          <button class="try-button" type="button" data-function="is_adult">Try it</button>
         </article>
         <article class="function-card">
           <h3>celsius_to_fahrenheit</h3>
           <p>Convert a Celsius temperature to Fahrenheit.</p>
+          <button class="try-button" type="button" data-function="celsius_to_fahrenheit">Try it</button>
         </article>
         <article class="function-card">
           <h3>count_vowels</h3>
           <p>Count vowels in a string, ignoring letter case.</p>
+          <button class="try-button" type="button" data-function="count_vowels">Try it</button>
         </article>
         <article class="function-card">
           <h3>invert</h3>
           <p>Return the opposite of a boolean value.</p>
+          <button class="try-button" type="button" data-function="invert">Try it</button>
         </article>
         <article class="function-card">
           <h3>greet</h3>
           <p>Greet a name or use the default guest greeting.</p>
+          <button class="try-button" type="button" data-function="greet">Try it</button>
         </article>
         <article class="function-card">
           <h3>find_max</h3>
           <p>Find the largest value in a list.</p>
+          <button class="try-button" type="button" data-function="find_max">Try it</button>
         </article>
         <article class="function-card">
           <h3>get_price</h3>
           <p>Look up an item's price in a dictionary.</p>
+          <button class="try-button" type="button" data-function="get_price">Try it</button>
         </article>
         <article class="function-card">
           <h3>swap</h3>
           <p>Swap the two values in a pair.</p>
+          <button class="try-button" type="button" data-function="swap">Try it</button>
         </article>
         <article class="function-card">
           <h3>common_items</h3>
           <p>Find items shared by two sets.</p>
+          <button class="try-button" type="button" data-function="common_items">Try it</button>
         </article>
         <article class="function-card">
           <h3>is_leap_year</h3>
           <p>Check whether a year is a leap year.</p>
+          <button class="try-button" type="button" data-function="is_leap_year">Try it</button>
         </article>
         <article class="function-card">
           <h3>to_int</h3>
           <p>Convert a value to an integer.</p>
+          <button class="try-button" type="button" data-function="to_int">Try it</button>
         </article>
         <article class="function-card">
           <h3>divide</h3>
           <p>Divide one number by another.</p>
+          <button class="try-button" type="button" data-function="divide">Try it</button>
         </article>
         <article class="function-card">
           <h3>power</h3>
           <p>Raise a base to an exponent.</p>
+          <button class="try-button" type="button" data-function="power">Try it</button>
         </article>
         <article class="function-card">
           <h3>square_root</h3>
           <p>Find the square root of a value.</p>
+          <button class="try-button" type="button" data-function="square_root">Try it</button>
         </article>
         <article class="function-card">
           <h3>factorial</h3>
           <p>Calculate a number's factorial.</p>
+          <button class="try-button" type="button" data-function="factorial">Try it</button>
         </article>
         <article class="function-card">
           <h3>average</h3>
           <p>Calculate the average of a list.</p>
+          <button class="try-button" type="button" data-function="average">Try it</button>
         </article>
       </section>
-      <p class="notice" role="status">
-        Interactive function runner is coming next.
-      </p>
+      <section class="runner" aria-labelledby="runner-title">
+        <h2 id="runner-title">Run a function</h2>
+        <form id="function-form">
+          <label for="function-select">Function</label>
+          <select id="function-select" name="function">
+            <option value="is_adult">is_adult</option>
+            <option value="celsius_to_fahrenheit">celsius_to_fahrenheit</option>
+            <option value="count_vowels">count_vowels</option>
+            <option value="invert">invert</option>
+            <option value="greet">greet</option>
+            <option value="find_max">find_max</option>
+            <option value="get_price">get_price</option>
+            <option value="swap">swap</option>
+            <option value="common_items">common_items</option>
+            <option value="is_leap_year">is_leap_year</option>
+            <option value="to_int">to_int</option>
+            <option value="divide">divide</option>
+            <option value="power">power</option>
+            <option value="square_root">square_root</option>
+            <option value="factorial">factorial</option>
+            <option value="average">average</option>
+          </select>
+          <label for="arguments">Arguments as a JSON array</label>
+          <textarea id="arguments" name="arguments" required spellcheck="false">[18]</textarea>
+          <button class="run-button" type="submit">Run function</button>
+        </form>
+        <h3>Result or error</h3>
+        <pre id="output" class="output" role="status" aria-live="polite">Choose a function and run it.</pre>
+      </section>
     </main>
+    <script>
+      const examples = {
+        is_adult: [18],
+        celsius_to_fahrenheit: [0],
+        count_vowels: ["Functional testing"],
+        invert: [true],
+        greet: ["Ada"],
+        find_max: [[1, 3, 2]],
+        get_price: [{ book: 12.5 }, "book"],
+        swap: [[1, "two"]],
+        common_items: [[1, 2, 3], [2, 3, 4]],
+        is_leap_year: [2024],
+        to_int: ["42"],
+        divide: [8, 2],
+        power: [2, 3],
+        square_root: [144],
+        factorial: [5],
+        average: [[1, 2, 3]],
+      };
+
+      const functionSelect = document.querySelector("#function-select");
+      const argumentsInput = document.querySelector("#arguments");
+      const output = document.querySelector("#output");
+
+      function selectFunction(name) {
+        functionSelect.value = name;
+        argumentsInput.value = JSON.stringify(examples[name], null, 2);
+        document.querySelector("#runner-title").scrollIntoView({ behavior: "smooth" });
+        argumentsInput.focus();
+      }
+
+      document.querySelectorAll(".try-button").forEach((button) => {
+        button.addEventListener("click", () => selectFunction(button.dataset.function));
+      });
+
+      functionSelect.addEventListener("change", () => {
+        argumentsInput.value = JSON.stringify(examples[functionSelect.value], null, 2);
+      });
+
+      document.querySelector("#function-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        let args;
+        try {
+          args = JSON.parse(argumentsInput.value);
+        } catch (error) {
+          output.dataset.state = "error";
+          output.textContent = `Invalid JSON: ${error.message}`;
+          return;
+        }
+
+        if (!Array.isArray(args)) {
+          output.dataset.state = "error";
+          output.textContent = "Arguments must be a JSON array.";
+          return;
+        }
+
+        output.dataset.state = "";
+        output.textContent = "Running...";
+        try {
+          const response = await fetch("/run", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              function: functionSelect.value,
+              arguments: args,
+            }),
+          });
+          const data = await response.json();
+          if (!response.ok) {
+            output.dataset.state = "error";
+            output.textContent = `${data.error.type}: ${data.error.message}`;
+            return;
+          }
+          output.dataset.state = "success";
+          output.textContent = `${data.result_type}: ${JSON.stringify(data.result, null, 2)}`;
+        } catch (error) {
+          output.dataset.state = "error";
+          output.textContent = `Request failed: ${error.message}`;
+        }
+      });
+    </script>
   </body>
 </html>

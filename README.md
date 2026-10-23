@@ -15,7 +15,9 @@ python -m pytest --cov=target --cov-branch --cov-report=term-missing --cov-fail-
 
 ## Run the frontend
 
-Start the Flask app and open `http://127.0.0.1:5000` in a browser:
+Start the Flask app and open `http://127.0.0.1:5000` in a browser. Choose a
+function, provide its positional arguments as a JSON array, and select **Run
+function**. The `common_items` function accepts JSON arrays for its set inputs.
 
 ```bash
 python app.py
