@@ -1,3 +1,5 @@
+import subprocess
+
 import pytest
 
 from app import app as flask_app
@@ -9,6 +11,56 @@ def client():
     return flask_app.test_client()
 
 
+def test_health_returns_deployed_commit_sha(client, monkeypatch):
+    commit_sha = "a" * 40
+    monkeypatch.setenv("APP_COMMIT_SHA", commit_sha)
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json == {"sha": commit_sha}
+
+
+def test_health_uses_local_git_sha_when_deploy_sha_is_unset(client, monkeypatch):
+    commit_sha = "b" * 40
+    monkeypatch.delenv("APP_COMMIT_SHA", raising=False)
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda *args, **kwargs: subprocess.CompletedProcess(
+            args[0], 0, stdout=f"{commit_sha}\n", stderr=""
+        ),
+    )
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json == {"sha": commit_sha}
+
+
+def test_health_reports_when_commit_sha_is_unavailable(client, monkeypatch):
+    monkeypatch.delenv("APP_COMMIT_SHA", raising=False)
+
+    def git_is_unavailable(*args, **kwargs):
+        raise FileNotFoundError("git executable not found")
+
+    monkeypatch.setattr(subprocess, "run", git_is_unavailable)
+
+    response = client.get("/health")
+
+    assert response.status_code == 503
+    assert "APP_COMMIT_SHA" in response.json["error"]
+
+
+def test_health_rejects_invalid_deployed_commit_sha(client, monkeypatch):
+    monkeypatch.setenv("APP_COMMIT_SHA", "not-a-full-commit-sha")
+
+    response = client.get("/health")
+
+    assert response.status_code == 503
+    assert "40-character" in response.json["error"]
+
+
 def test_home_page_lists_every_function_with_a_try_button(client):
     response = client.get("/")
     page = response.get_data(as_text=True)
@@ -17,6 +69,7 @@ def test_home_page_lists_every_function_with_a_try_button(client):
     assert page.count('class="try-button"') == 16
     assert 'id="function-form"' in page
     assert 'id="output"' in page
+    assert 'id="commit-sha"' in page
 
 
 @pytest.mark.parametrize(

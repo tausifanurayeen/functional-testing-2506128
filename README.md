@@ -18,6 +18,9 @@ python -m pytest --cov=target --cov-branch --cov-report=term-missing --cov-fail-
 Start the Flask app and open `http://127.0.0.1:5000` in a browser. Choose a
 function, provide its positional arguments as a JSON array, and select **Run
 function**. The `common_items` function accepts JSON arrays for its set inputs.
+The page also displays the deployed commit SHA from `/health`. Set
+`APP_COMMIT_SHA` to the full 40-character commit SHA in deployment environments;
+locally, the app reads the current SHA from Git.
 
 ```bash
 python app.py

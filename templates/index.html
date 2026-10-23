@@ -34,6 +34,16 @@
         line-height: 1.6;
       }
 
+      .build-info {
+        margin-top: 1rem;
+        color: #d2e0f4;
+        font-size: 0.9rem;
+      }
+
+      .build-info code {
+        overflow-wrap: anywhere;
+      }
+
       main {
         max-width: 1100px;
         margin: 2rem auto;
@@ -148,6 +158,9 @@
       <p>
         Explore and run the 16 Python functions in this project. Choose a
         function, provide its arguments as JSON, and view the result or error.
+      </p>
+      <p class="build-info">
+        Deployed commit: <code id="commit-sha" aria-live="polite">Loading…</code>
       </p>
     </header>
     <main>
@@ -287,6 +300,22 @@
       const functionSelect = document.querySelector("#function-select");
       const argumentsInput = document.querySelector("#arguments");
       const output = document.querySelector("#output");
+      const commitSha = document.querySelector("#commit-sha");
+
+      async function loadCommitSha() {
+        try {
+          const response = await fetch("/health");
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || `Health check failed (${response.status}).`);
+          }
+          commitSha.textContent = data.sha;
+        } catch (error) {
+          commitSha.textContent = `Unavailable: ${error.message}`;
+        }
+      }
+
+      loadCommitSha();
 
       function selectFunction(name) {
         functionSelect.value = name;
