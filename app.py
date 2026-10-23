@@ -1,3 +1,7 @@
+import os
+import re
+import subprocess
+
 from flask import Flask, jsonify, render_template, request
 
 from target import (
@@ -20,6 +24,7 @@ from target import (
 )
 
 app = Flask(__name__)
+COMMIT_SHA_PATTERN = re.compile(r"^[0-9a-fA-F]{40}$")
 
 FUNCTIONS = {
     "is_adult": is_adult,
@@ -44,6 +49,32 @@ FUNCTIONS = {
 @app.get("/")
 def index():
     return render_template("index.html")
+
+
+@app.get("/health")
+def health():
+    commit_sha = os.environ.get("APP_COMMIT_SHA") or os.environ.get("RENDER_GIT_COMMIT")
+    if commit_sha is None:
+        try:
+            commit_sha = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=app.root_path,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+        except (FileNotFoundError, subprocess.CalledProcessError):
+            return (
+                jsonify(
+                    error="Commit SHA is unavailable; set APP_COMMIT_SHA at deploy time."
+                ),
+                503,
+            )
+
+    if not COMMIT_SHA_PATTERN.fullmatch(commit_sha):
+        return jsonify(error="APP_COMMIT_SHA must be a full 40-character commit SHA."), 503
+
+    return jsonify(sha=commit_sha)
 
 
 @app.post("/run")
